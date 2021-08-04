@@ -102,12 +102,13 @@ pip3 install mitmproxy
 
     ##### 运行
 
-    将daka.py，daka.txt，dakaRobot.jar，device.json（第一次成功登录mirai后生成的）放入同一目录下
+    将daka.py，daka.txt，dakaRobot.jar，daka.sh，device.json（第一次成功登录mirai后生成的）放入同一目录下
 
     ```
-    python3 daka.py
-    java -jar dakaRobot.jar
+    chmod 777 daka.sh
+    ./daka.sh
     ```
 
     可能需要按照6，7步进行证书的再次安装
-
+    
+    
