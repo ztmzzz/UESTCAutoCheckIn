@@ -86,6 +86,10 @@ public class daka {
           break;
         case "50005": // 打卡信息错误
           throw new IOException("打卡信息错误");
+        case "40001": // sessionid过期
+          throw new IOException("需要更新sessionId");
+        case "50000": // 重复打卡，垃圾学校数据库错误
+          throw new IOException(node.get("detail").asText());
         default: // 未知错误
           throw new IOException("未知错误");
       }
@@ -111,6 +115,7 @@ public class daka {
       nodeTemp.put("todayMorningTemperature", "36°C~36.5°C");
       nodeTemp.put("yesterdayEveningTemperature", "36°C~36.5°C");
       nodeTemp.put("yesterdayMiddayTemperature", "36°C~36.5°C");
+      nodeTemp.put("healthColor", "绿色");
       nodeTemp.put("location", location);
     }
     String temp = nodeTemp.toString();

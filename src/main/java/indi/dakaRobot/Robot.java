@@ -44,6 +44,7 @@ public class Robot {
   public static String botPassword = "机器人QQ密码";
 
   public static void main(String[] args) {
+    TimeZone.setDefault(TimeZone.getTimeZone("Asia/Shanghai"));
     Bot bot =
         BotFactory.INSTANCE.newBot(
             botQQ,
