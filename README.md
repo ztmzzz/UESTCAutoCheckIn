@@ -36,7 +36,9 @@ pip3 install mitmproxy
 
 6. 设置手机的代理服务器，端口为8080，ip为运行py文件的电脑ip。手机打开mitm.it网站，出现此说明连接上了代理服务器。<img src="https://i.loli.net/2021/08/04/76zjkfYDXKPAIv5.jpg" style="zoom: 25%;" />
 
-7. 根据所用手机选择对应证书下载并且安装证书。安卓手机参考https://blog.csdn.net/djzhao627/article/details/102812783，https://blog.51cto.com/abool/1429700
+7. 根据所用手机选择对应证书下载并且安装证书。安卓手机参考
+   https://blog.csdn.net/djzhao627/article/details/102812783
+   https://blog.51cto.com/abool/1429700
 
 8. 手机先完全关闭微信，再打开微信小程序，进入健康打卡界面，此时data.txt会被更新，如果打不开健康打卡界面可以关开代理再试
 
