@@ -1,0 +1,34 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version '1.5.21'
+    id 'org.jetbrains.kotlin.plugin.serialization' version '1.5.21'
+    id 'com.github.johnrengelman.shadow' version '7.0.0'
+    id 'java'
+}
+
+group = 'indi.dakaRobot'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    maven { url 'https://maven.aliyun.com/repository/public' }
+    mavenCentral()
+}
+dependencies {
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.5.21'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.2'
+    implementation 'net.mamoe:mirai-core:2.6.7'
+    implementation "com.squareup.okhttp3:okhttp:4.9.1"
+    implementation "com.fasterxml.jackson.core:jackson-core:2.12.4"
+    implementation "com.fasterxml.jackson.core:jackson-databind:2.12.4"
+    implementation "com.fasterxml.jackson.core:jackson-annotations:2.12.4"
+}
+shadowJar {
+    archiveBaseName.set('dakaRobot')
+    archiveClassifier.set('')
+    archiveVersion.set('')
+    manifest {
+        attributes(
+                'Main-Class': 'indi.dakaRobot.Robot'
+        )
+    }
+}
