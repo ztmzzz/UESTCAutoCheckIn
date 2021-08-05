@@ -21,6 +21,10 @@ class TimerTask extends java.util.TimerTask {
   public void run() {
     try {
       daka.checkLastDay();
+    } catch (IOException e) {
+      admin.sendMessage(e.getMessage());
+    }
+    try {
       daka.daka();
       admin.sendMessage("打卡成功");
     } catch (IOException e) {
@@ -61,7 +65,14 @@ public class Robot {
     calendar.set(Calendar.MINUTE, 0);
     calendar.set(Calendar.SECOND, 0);
     Date time = calendar.getTime(); // 每天8点执行任务
-    timer.schedule(new TimerTask(admin), time, 1000 * 60 * 60 * 24);
+    Date now = new Date();
+    long diff = time.getTime() - now.getTime();
+    if (diff < 0) {
+      timer.schedule(new TimerTask(admin), 0);
+      calendar.add(Calendar.DATE, 1);
+      time = calendar.getTime();
+    }
+    timer.scheduleAtFixedRate(new TimerTask(admin), time, 1000 * 60 * 60 * 24);
     bot.getEventChannel()
         .subscribeAlways(
             FriendMessageEvent.class,
