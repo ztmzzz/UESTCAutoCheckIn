@@ -59,6 +59,7 @@ public class daka {
   public static void daka() throws IOException {
     updateInfo();
     if (date.equals(lastDay)) {
+      throw new IOException("重复打卡");
       return;
     }
     ObjectNode nodeTemp = mapper.createObjectNode();
