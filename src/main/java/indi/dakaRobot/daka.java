@@ -60,20 +60,23 @@ public class daka {
     updateInfo();
     if (date.equals(lastDay)) {
       throw new IOException("重复打卡");
-      return;
     }
     ObjectNode nodeTemp = mapper.createObjectNode();
-    nodeTemp.put("healthCondition", "正常");
-    nodeTemp.put("todayMorningTemperature", "36°C~36.5°C");
-    nodeTemp.put("yesterdayEveningTemperature", "36°C~36.5°C");
-    nodeTemp.put("yesterdayMiddayTemperature", "36°C~36.5°C");
-    nodeTemp.put("location", location);
+    nodeTemp.put("currentAddress", location);
+    nodeTemp.put("remark", "");
+    nodeTemp.put("healthInfo", "正常");
+    nodeTemp.put("isContactWuhan", 0);
+    nodeTemp.put("isFever", 0);
+    nodeTemp.put("isInSchool", 0);
+    nodeTemp.put("isLeaveChengdu", 1);
+    nodeTemp.put("isSymptom", 0);
+    nodeTemp.put("temperature", "36°C~36.5°C");
     String temp = nodeTemp.toString();
     RequestBody body = RequestBody.create(temp, JSON);
 
     Request request =
         new Request.Builder()
-            .url("https://jzsz.uestc.edu.cn/wxvacation/monitorRegisterForReturned")
+            .url("https://jzsz.uestc.edu.cn/wxvacation/monitorRegister")
             .addHeader(
                 "User-Agent",
                 "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36 MicroMessenger/7.0.9.501 NetType/WIFI MiniProgramEnv/Windows WindowsWechat")
@@ -89,7 +92,7 @@ public class daka {
             .post(body)
             .build();
     Response response = client.newCall(request).execute();
-    String result = "";
+    String result;
     if (response.isSuccessful()) {
       result = response.body().string();
     } else {
@@ -109,10 +112,8 @@ public class daka {
             e.printStackTrace();
           }
           break;
-        case "40001": // 登录失败
-          throw new IOException("登录失败");
-        case "50000": // 重复打卡
-          throw new IOException("服务器返回重复打卡但与本地记录不符");
+        case "50005": // 打卡信息错误
+          throw new IOException("打卡信息错误");
         default: // 未知错误
           throw new IOException("未知错误");
       }
