@@ -12,7 +12,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class daka {
-  public static String jsessionid;
+  public static String sessionId;
   public static OkHttpClient client = new OkHttpClient();
   public static ObjectMapper mapper = new ObjectMapper();
   public static Date lastDay;
@@ -21,11 +21,12 @@ public class daka {
   // 修改地址既可，默认填报体温为36°C~36.5°C，可在下面修改
   public static String location = "你的地址";
   public static final String file = "daka.txt";
+  public static final String api = "monitorRegisterForReturned";//api为monitorRegister或者monitorRegisterForReturned，详细参数在下面修改
 
   static {
     try {
       BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
-      jsessionid = bufferedReader.readLine();
+      sessionId = bufferedReader.readLine();
       SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd");
       lastDay = ft.parse(bufferedReader.readLine());
     } catch (IOException | ParseException e) {
@@ -38,7 +39,7 @@ public class daka {
   public static void updateInfo() {
     try {
       BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
-      jsessionid = bufferedReader.readLine();
+      sessionId = bufferedReader.readLine();
       SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd");
       lastDay = ft.parse(bufferedReader.readLine());
       date = new Date();
@@ -61,36 +62,7 @@ public class daka {
     if (date.equals(lastDay)) {
       throw new IOException("重复打卡");
     }
-    ObjectNode nodeTemp = mapper.createObjectNode();
-    nodeTemp.put("currentAddress", location);
-    nodeTemp.put("remark", "");
-    nodeTemp.put("healthInfo", "正常");
-    nodeTemp.put("isContactWuhan", 0);
-    nodeTemp.put("isFever", 0);
-    nodeTemp.put("isInSchool", 0);
-    nodeTemp.put("isLeaveChengdu", 1);
-    nodeTemp.put("isSymptom", 0);
-    nodeTemp.put("temperature", "36°C~36.5°C");
-    String temp = nodeTemp.toString();
-    RequestBody body = RequestBody.create(temp, JSON);
-
-    Request request =
-        new Request.Builder()
-            .url("https://jzsz.uestc.edu.cn/wxvacation/monitorRegister")
-            .addHeader(
-                "User-Agent",
-                "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36 MicroMessenger/7.0.9.501 NetType/WIFI MiniProgramEnv/Windows WindowsWechat")
-            //            .addHeader("X-Tag", "flyio")
-            //            .addHeader("Encode", "false")
-            //            .addHeader("Referer",
-            // "https://servicewechat.com/wx521c0c16b77041a0/30/page-frame.html")
-            // 可加可不加
-            .addHeader("Accept-Encoding", "identity")
-            .addHeader("Connection", "close")
-            .addHeader("Content-Type", "application/json")
-            .addHeader("Cookie", "JSESSIONID=" + jsessionid)
-            .post(body)
-            .build();
+    Request request=generateRequest(api);
     Response response = client.newCall(request).execute();
     String result;
     if (response.isSuccessful()) {
@@ -106,7 +78,7 @@ public class daka {
           try {
             BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file));
             SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd");
-            bufferedWriter.write(jsessionid + "\n" + ft.format(date));
+            bufferedWriter.write(sessionId + "\n" + ft.format(date));
             bufferedWriter.flush();
           } catch (IOException e) {
             e.printStackTrace();
@@ -122,10 +94,44 @@ public class daka {
     }
   }
 
+  public static Request generateRequest(String choice) {
+    ObjectNode nodeTemp = mapper.createObjectNode();
+    if (choice.equals("monitorRegister")) {
+      nodeTemp.put("currentAddress", location);
+      nodeTemp.put("remark", "");
+      nodeTemp.put("healthInfo", "正常");
+      nodeTemp.put("isContactWuhan", 0);
+      nodeTemp.put("isFever", 0);
+      nodeTemp.put("isInSchool", 0);
+      nodeTemp.put("isLeaveChengdu", 1);
+      nodeTemp.put("isSymptom", 0);
+      nodeTemp.put("temperature", "36°C~36.5°C");
+    } else {
+      nodeTemp.put("healthCondition", "正常");
+      nodeTemp.put("todayMorningTemperature", "36°C~36.5°C");
+      nodeTemp.put("yesterdayEveningTemperature", "36°C~36.5°C");
+      nodeTemp.put("yesterdayMiddayTemperature", "36°C~36.5°C");
+      nodeTemp.put("location", location);
+    }
+    String temp = nodeTemp.toString();
+    RequestBody body = RequestBody.create(temp, JSON);
+    return new Request.Builder()
+            .url("https://jzsz.uestc.edu.cn/wxvacation/"+api)
+            .addHeader(
+                    "User-Agent",
+                    "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36 MicroMessenger/7.0.9.501 NetType/WIFI MiniProgramEnv/Windows WindowsWechat")
+            .addHeader("Accept-Encoding", "identity")
+            .addHeader("Connection", "close")
+            .addHeader("Content-Type", "application/json")
+            .addHeader("Cookie", "JSESSIONID=" + sessionId)
+            .post(body)
+            .build();
+  }
+
   public static void main(String[] args) {
     updateInfo();
     try {
-      System.out.println(jsessionid);
+      System.out.println(sessionId);
       daka();
 
     } catch (IOException e) {

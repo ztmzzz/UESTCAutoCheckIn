@@ -3,13 +3,13 @@
 
 ## 简介
 
-使用了mirai作为QQ机器人，通过QQ机器人进行交互，可以自动对微信进行抓包获取session。
+使用了mirai作为QQ机器人，通过QQ机器人进行交互，可以自动对微信进行抓包获取sessionId。
 
 每天定时进行一次健康打卡，打卡的结果通过QQ机器人返回。
 
 ## 依赖组件
 
-python3（3.9.6可以使用，其余未测试），mitmproxy，openjdk 11
+python3（3.9.6可以使用，其余未测试），openjdk 11，mitmproxy(可选)
 
 ```
 pip3 install mitmproxy
@@ -19,12 +19,12 @@ pip3 install mitmproxy
 
 1. 修改Robot.java，输入管理QQ和机器人QQ的信息
 
-2. 修改daka.java，输入打卡地址，打卡地址可以在微信小程序中查看（可选：修改data.txt位置，此文件存放session）
+2. 修改daka.java，输入打卡地址，打卡地址可以在微信小程序中查看（可选：修改data.txt位置，此文件存放sessionId）
 
-3. 在根目录（或者第2步的位置）新建daka.txt，写入session和日期。session随便写一个，无所谓的，日期代表要从哪天开始打卡
+3. 在根目录（或者第2步的位置）新建daka.txt，写入sessionId和日期。日期代表要从哪天开始打卡。[sessionId获取方法](#sessionId获取方法)（当sessionId过期后，QQ机器人会发来登录失败的提示，修改后向QQ机器人发送`打卡`既可）（目前还没遇到失效的情况）
 
    ```
-   abc-def-xxx
+   00000000-0000-0000-0000-000000000000
    2021-08-01
    ```
 
@@ -34,83 +34,86 @@ pip3 install mitmproxy
 
 5. 将daka.py，daka.txt，dakaRobot.jar放到同一个目录中，运行py和jar（第一次运行mirai会跳出设备锁，按照上面的步骤验证既可）
 
-6. 设置手机的代理服务器，端口为8080，ip为运行py文件的电脑ip。手机打开mitm.it网站，出现此说明连接上了代理服务器。<img src="https://i.loli.net/2021/08/04/76zjkfYDXKPAIv5.jpg" style="zoom: 25%;" />
+6. 机器人默认在每天的8点打卡，可以在源文件中修改
 
-7. 根据所用手机选择对应证书下载并且安装证书。安卓手机参考
-   https://blog.csdn.net/djzhao627/article/details/102812783
-   https://blog.51cto.com/abool/1429700
+   ## 完整版使用方法（实际上sessionId存活时间极长，用不到）
 
-8. 手机先完全关闭微信，再打开微信小程序，进入健康打卡界面，此时data.txt会被更新，如果打不开健康打卡界面可以关开代理再试
+   如果有空闲的电脑或者虚拟机，推荐一直运行程序，以centos7为例
 
-   （当session过期后，QQ机器人会发来登录失败的提示，按照第8步进行操作，然后向QQ机器人发送`打卡`既可）
+   ##### 安装python和mitmproxy
 
-9. data.txt更新后向QQ机器人发送`打卡`，会有打卡结果的返回。机器人默认在每天的8点打卡，可以在源文件中修改
+   ```
+   yum -y groupinstall "Development tools"
+   yum install -y zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel readline-devel tk-devel libffi-devel wget
+   wget https://www.python.org/ftp/python/3.9.6/Python-3.9.6.tgz
+   mkdir /usr/local/python3
+   mv Python-3.9.6.tgz /usr/local/python3/
+   cd /usr/local/python3/
+   tar xf Python-3.9.6.tgz 
+   cd Python-3.9.6
+   ./configure --prefix=/usr/local/python3
+   make && make install
+   ln -s /usr/local/python3/bin/python3 /usr/bin/python3
+   ln -s /usr/local/python3/bin/pip3 /usr/bin/pip3
+   cd /etc/profile.d
+   echo 'export PATH=$PATH:/usr/local/python3/bin/' > python3.sh
+   pip3 install mitmproxy
+   ```
 
-10. py文件用于获取session，java文件为QQ机器人和打卡，可以在有需要的时候再运行py文件，不要忘了每次获取完session关闭手机的代理服务器
+   ##### 关闭防火墙
 
-    ## 推荐的使用方法
+   ```
+   systemctl disable firewalld
+   ```
 
-    如果有空闲的电脑或者虚拟机，推荐一直运行程序，以centos7为例
+   ##### 安装openjdk11
 
-    ##### 安装python和mitmproxy
+   ```
+   yum install -y java-11-openjdk java-11-openjdk-devel.x86_64
+   ls -lrt /etc/alternatives/java
+   输出中有一段java-11-openjdk-11.0.12.0.7-0.el7_9.x86_64（根据自己电脑显示的来），下面的那部分要修改成一样的
+   vi /etc/profile
+   ```
 
-    ```
-    yum -y groupinstall "Development tools"
-    yum install -y zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel readline-devel tk-devel libffi-devel wget
-    wget https://www.python.org/ftp/python/3.9.6/Python-3.9.6.tgz
-    mkdir /usr/local/python3
-    mv Python-3.9.6.tgz /usr/local/python3/
-    cd /usr/local/python3/
-    tar xf Python-3.9.6.tgz 
-    cd Python-3.9.6
-    ./configure --prefix=/usr/local/python3
-    make && make install
-    ln -s /usr/local/python3/bin/python3 /usr/bin/python3
-    ln -s /usr/local/python3/bin/pip3 /usr/bin/pip3
-    cd /etc/profile.d
-    echo 'export PATH=$PATH:/usr/local/python3/bin/' > python3.sh
-    pip3 install mitmproxy
-    ```
+   底部加入
 
-    ##### 关闭防火墙
+   ```
+   export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-11.0.12.0.7-0.el7_9.x86_64
+   export JRE_HOME=$JAVA_HOME/jre
+   export CLASSPATH=$JAVA_HOME/lib:$JRE_HOME/lib:$CLASSPATH
+   export PATH=$JAVA_HOME/bin:$JRE_HOME/bin:$PATH
+   ```
 
-    ```
-    systemctl disable firewalld
-    ```
+   刷新配置
 
-    ##### 安装openjdk11
+   ```
+   source /etc/profile
+   ```
 
-    ```
-    yum install -y java-11-openjdk java-11-openjdk-devel.x86_64
-    ls -lrt /etc/alternatives/java
-    输出中有一段java-11-openjdk-11.0.12.0.7-0.el7_9.x86_64（根据自己电脑显示的来），下面的那部分要修改成一样的
-    vi /etc/profile
-    ```
+   ##### 运行
 
-    底部加入
+   将daka.py，daka.txt，dakaRobot.jar，daka.sh，device.json（第一次成功登录mirai后生成的）放入同一目录下
 
-    ```
-    export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-11.0.12.0.7-0.el7_9.x86_64
-    export JRE_HOME=$JAVA_HOME/jre
-    export CLASSPATH=$JAVA_HOME/lib:$JRE_HOME/lib:$CLASSPATH
-    export PATH=$JAVA_HOME/bin:$JRE_HOME/bin:$PATH
-    ```
+   ```
+   chmod 777 daka.sh
+   ./daka.sh
+   ```
 
-    刷新配置
+   ##### sessionId的自动获取
 
-    ```
-    source /etc/profile
-    ```
+   1. 设置手机的代理服务器，端口为8080，ip为运行py文件的电脑ip。手机打开mitm.it网站，出现内容则说明连接上了代理服务器。
+   2. 根据所用手机选择对应证书下载并且安装证书。安卓手机参考
+         https://blog.csdn.net/djzhao627/article/details/102812783
+         https://blog.51cto.com/abool/1429700
+   3. 手机先完全关闭微信，再打开微信小程序，进入健康打卡界面，此时data.txt会被更新，如果打不开健康打卡界面可以关开代理再试
+   4. 获取或者更新sessionId后向机器人发送`打卡`即可开始打卡
 
-    ##### 运行
+   ## sessionId获取方法
 
-    将daka.py，daka.txt，dakaRobot.jar，daka.sh，device.json（第一次成功登录mirai后生成的）放入同一目录下
+   1. 安装Burp Suite Community Edition
+   2. 安装Burp Suite Community Edition的CA证书，在Proxy的Options选项中
+   3. 设置电脑代理服务器为127.0.0.1:8080
+   4. 在Proxy的Intercept中确认Intercept is on，然后打开微信小程序，此时应该会拦截到请求
+   5. 一路按Forward，直到第一行为`POST /wxvacation/api/epidemic/login/checkBind HTTP/1.1`
+   6. Forward该请求，然后在HTTP history中选择该请求，Response选项卡中的sessionId即为需要的
 
-    ```
-    chmod 777 daka.sh
-    ./daka.sh
-    ```
-
-    可能需要按照6，7步进行证书的再次安装
-    
-    

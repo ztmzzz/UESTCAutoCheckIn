@@ -29,7 +29,7 @@ class TimerTask extends java.util.TimerTask {
       admin.sendMessage("打卡成功");
     } catch (IOException e) {
       if (e.getMessage().equals("登录失败")) {
-        admin.sendMessage("登录微信修改jsessionid");
+        admin.sendMessage("登录微信修改sessionId");
       } else {
         admin.sendMessage(e.getMessage());
       }
