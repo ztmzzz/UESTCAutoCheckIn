@@ -1,5 +1,16 @@
 # 电子科技大学每日健康填报自动打卡
+
 电子科技大学每日自动健康填报
+
+# 新版方式(采用Github的Actions功能)
+
+1. [获取sessionId](#sessionId获取方法)
+2. Fork本仓库
+3. 点击Settings→Secrets→New repository secret
+4. 在Name中填入session，在Value中填入刚刚获取到的XXX-XXX
+5. 进入Actions界面手动运行一次后既可，之后每天8点会自动运行
+
+# 旧版方式(采用QQ机器人)
 
 ## 简介
 
@@ -21,7 +32,8 @@ pip3 install mitmproxy
 
 2. 修改daka.java，输入打卡地址，打卡地址可以在微信小程序中查看（可选：修改data.txt位置，此文件存放sessionId）
 
-3. 在根目录（或者第2步的位置）新建daka.txt，写入sessionId和日期。日期代表要从哪天开始打卡。[sessionId获取方法](#sessionId获取方法)（当sessionId过期后，QQ机器人会发来登录失败的提示，修改后向QQ机器人发送`打卡`既可）（目前还没遇到失效的情况）
+3. 在根目录（或者第2步的位置）新建daka.txt，写入sessionId和日期。日期代表要从哪天开始打卡。[sessionId获取方法](#sessionId获取方法)
+   （当sessionId过期后，QQ机器人会发来登录失败的提示，修改后向QQ机器人发送`打卡`既可）（目前还没遇到失效的情况）
 
    ```
    00000000-0000-0000-0000-000000000000
@@ -101,19 +113,20 @@ pip3 install mitmproxy
 
    ##### sessionId的自动获取
 
-   1. 设置手机的代理服务器，端口为8080，ip为运行py文件的电脑ip。手机打开mitm.it网站，出现内容则说明连接上了代理服务器。
-   2. 根据所用手机选择对应证书下载并且安装证书。安卓手机参考
-         https://blog.csdn.net/djzhao627/article/details/102812783
-         https://blog.51cto.com/abool/1429700
-   3. 手机先完全关闭微信，再打开微信小程序，进入健康打卡界面，此时data.txt会被更新，如果打不开健康打卡界面可以关开代理再试
-   4. 获取或者更新sessionId后向机器人发送`打卡`即可开始打卡
+    1. 设置手机的代理服务器，端口为8080，ip为运行py文件的电脑ip。手机打开mitm.it网站，出现内容则说明连接上了代理服务器。
+    2. 根据所用手机选择对应证书下载并且安装证书。安卓手机参考
+       https://blog.csdn.net/djzhao627/article/details/102812783
+       https://blog.51cto.com/abool/1429700
+    3. 手机先完全关闭微信，再打开微信小程序，进入健康打卡界面，此时data.txt会被更新，如果打不开健康打卡界面可以关开代理再试
+    4. 获取或者更新sessionId后向机器人发送`打卡`即可开始打卡
 
    ## sessionId获取方法
 
-   1. 安装Burp Suite Community Edition
-   2. 安装Burp Suite Community Edition的CA证书，在Proxy的Options选项中
-   3. 设置电脑代理服务器为127.0.0.1:8080
-   4. 在Proxy的Intercept中确认Intercept is on，然后打开微信小程序，此时应该会拦截到请求
-   5. 一路按Forward，直到第一行为`POST /wxvacation/api/epidemic/login/checkBind HTTP/1.1`
-   6. Forward该请求，然后在HTTP history中选择该请求，Response选项卡中的sessionId即为需要的
+    1. 安装Burp Suite Community Edition
+    2. 安装Burp Suite Community Edition的CA证书(在Proxy的Options选项中)
+    3. 在Proxy的Intercept中确认Intercept is off，然后打开微信小程序直到体温填报的界面
+    4. 设置电脑代理服务器为127.0.0.1:8080
+    5. 在每日填报和假期出行之间多点几下，可以看到HTTP history中有很多条目
+    6. 找到`/wxvacation/api/epidemic/checkRegisterNew`或`/wxvacation/api/epidemic/getBackSchoolInfo`
+    7. 查看Response选项卡中的SESSION=XXX-XXX-XXX-XXX-XXX即为需要的
 
