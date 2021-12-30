@@ -10,7 +10,14 @@
 4. 在Name中填入session，在Value中填入刚刚获取到的XXX-XXX
 5. 进入Actions界面手动运行一次后既可，之后每天8点会自动运行
 
-# 旧版方式(采用QQ机器人)
+## sessionId获取方法
+
+    1. 使用抓包软件，例如IOS的Stream。要求能进行Https的抓包
+    2. 确保微信小程序关闭情况下，打开微信小程序，进入体温填报界面(先开启抓包，再从微信进入小程序)
+    3. 可以在抓包的界面找到`GET https://jzsz.uestc.edu.cn/wxvacation/api/epidemic/checkRegisterNew`
+    4. 查看请求头部的`Referer`有`sessionId=XXX-XXX-XXX-XXX-XXX`即为需要的
+
+# 旧版方式(采用QQ机器人)(未更新)
 
 ## 简介
 
@@ -120,13 +127,5 @@ pip3 install mitmproxy
     3. 手机先完全关闭微信，再打开微信小程序，进入健康打卡界面，此时data.txt会被更新，如果打不开健康打卡界面可以关开代理再试
     4. 获取或者更新sessionId后向机器人发送`打卡`即可开始打卡
 
-   ## sessionId获取方法
 
-    1. 安装Burp Suite Community Edition
-    2. 安装Burp Suite Community Edition的CA证书(在Proxy的Options选项中)
-    3. 在Proxy的Intercept中确认Intercept is off，然后打开微信小程序直到体温填报的界面
-    4. 设置电脑代理服务器为127.0.0.1:8080
-    5. 在每日填报和假期出行之间多点几下，可以看到HTTP history中有很多条目
-    6. 找到`/wxvacation/api/epidemic/checkRegisterNew`或`/wxvacation/api/epidemic/getBackSchoolInfo`
-    7. 查看Response选项卡中的SESSION=XXX-XXX-XXX-XXX-XXX即为需要的
 
