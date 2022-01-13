@@ -8,7 +8,8 @@
 2. Fork本仓库
 3. 点击Settings→Secrets→New repository secret
 4. 在Name中填入session，在Value中填入刚刚获取到的XXX-XXX
-5. 进入Actions界面手动运行一次后既可，之后每天8点会自动运行
+5. 同理新增一个Name为`type`，Value为`normal`或者`vacation`，`normal`代表在学校里，`vacation`代表回家了
+6. 进入Actions界面手动运行一次后既可，之后每天8点会自动运行
 
 ## sessionId获取方法
 
