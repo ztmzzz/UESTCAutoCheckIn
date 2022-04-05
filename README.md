@@ -10,6 +10,7 @@
 4. 在Name中填入session，在Value中填入刚刚获取到的XXX-XXX
 5. 同理新增一个Name为`type`，Value为`normal`或者`vacation`，`normal`代表在学校里，`vacation`代表回家了
 6. 进入Actions界面手动运行一次后既可，之后每天8点会自动运行
+7. sessionId过期时间为90天，请及时更新，感谢[Thm-lab](https://github.com/Thm-lab)提出
 
 ## sessionId获取方法
 
