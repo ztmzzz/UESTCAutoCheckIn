@@ -1,6 +1,6 @@
-import os
 import time
 import requests
+import argparse
 
 data_normal = {
     "healthCondition": "正常",
@@ -33,9 +33,12 @@ headers = {
                   'MiniProgramEnv/Windows WindowsWechat',
     'Content-Type': 'application/json',
 }
-
-sessionId = os.environ["session"]
-type = os.environ["type"]
+parser = argparse.ArgumentParser()
+parser.add_argument('--session', type=str, default=None)
+parser.add_argument('--type', type=str, default=None)
+args = parser.parse_args()
+sessionId = args.session
+type = args.type
 
 res = requests.get(url='https://jzsz.uestc.edu.cn/wxvacation/api/user/getLoginUser?sessionId=' + sessionId,
                    headers=headers)

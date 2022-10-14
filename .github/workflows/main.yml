@@ -15,10 +15,7 @@ jobs:
       with:
         python-version: 3.8
     - name: 'Working'
-      env:
-        session: ${{ secrets.session }}
-        type: ${{ secrets.type }}
       run: |
         python -m pip install --upgrade pip
         pip install requests
-        python action.py
+        python action.py --session=${{ secrets.session }} --type=${{ secrets.type }}
