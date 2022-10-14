@@ -27,3 +27,5 @@ hs_err_pid*
 /.gradle/
 /src/main/resources/META-INF/services/net.mamoe.mirai.console.plugin.jvm.JvmPlugin
 
+/cache/
+/build/
